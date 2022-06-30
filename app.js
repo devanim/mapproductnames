@@ -9,22 +9,18 @@ var createCsvWriter = csvwriter.createObjectCsvWriter
 const csvWriter = createCsvWriter({
 
     // Output csv file name is geek_data
-    path: 'geek_data.csv',
+    path: 'DenumiriProdusePieseAuto_New.csv',
     header: [
-
         // Title of the columns (column_names)
-        { id: 'id', title: 'ID' },
+        { id: 'id', title: 'id' },
         { id: 'denumireprodus', title: 'denumireprodus' },
         { id: 'denumireprodus_extra', title: 'denumireprodus_extra' },
-        { id: 'denumireprodusOld', title: 'denumireprodusOld' },
+        { id: 'denumireprodus_new', title: 'denumireprodus_new' },
     ]
 });
 
 CSVToJSON().fromFile('input/SugestiiDenumiriProduse.csv')
     .then(productNamingSuggestions => {
-        // users is a JSON array
-        // log the JSON array
-        //console.log(productNamingSuggestions);
         const data = JSON.stringify(productNamingSuggestions);
         fs.writeFile('./sugestii.json', data, 'utf8', (err) => {
 
@@ -36,7 +32,6 @@ CSVToJSON().fromFile('input/SugestiiDenumiriProduse.csv')
 
         });
     }).catch(err => {
-        // log error if any
         console.log(err);
     });
 
@@ -45,19 +40,13 @@ CSVToJSON().fromFile('input/DenumiriProdusePieseAuto.csv')
         try {
             const data = fs.readFileSync('./sugestii.json', 'utf8');
             const sugestii = JSON.parse(data);
-            let i = 1;
             productNames.forEach((productName) => {
-                i++;
-                //f (i < 500) {
                 sugestii.forEach(sugestie => {
                     if (sugestie.nume === productName.denumireprodus) {
-                        productName.denumireprodusOld = productName.denumireprodus;
-                        productName.denumireprodus = sugestie.sugestie;
+                        productName.denumireprodus_new = sugestie.sugestie;
                     }
                 });
-                //}
             })
-
             csvWriter
                 .writeRecords(productNames)
                 .then(() => console.log('Data uploaded into csv successfully'));
@@ -65,7 +54,6 @@ CSVToJSON().fromFile('input/DenumiriProdusePieseAuto.csv')
         } catch (err) {
             console.log(`Error reading file from disk: ${err}`);
         }
-
 
     }).catch(err => {
         // log error if any
